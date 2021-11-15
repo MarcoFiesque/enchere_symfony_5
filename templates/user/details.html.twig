@@ -1,0 +1,49 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Hello UserController!{% endblock %}
+
+{% block content %}
+
+    <div class="user_details">
+        <table class="table table-borderless">
+            <tbody>
+                <tr class="row" >
+                    <td class="col-4" scope="row">Pseudo</td>
+                    <td class="col-auto">{{user.pseudo}}</td>
+                </tr>
+                <tr class="row" >
+                    <td class="col-4" scope="row">Nom</td>
+                    <td class="col-auto">{{user.lastname}}</td>
+                </tr>
+                <tr class="row" >
+                    <td class="col-4" scope="row">Prénom</td>
+                    <td class="col-auto">{{user.firstname}}</td>
+                </tr>
+                <tr class="row" >
+                    <td class="col-4" scope="row">Email</td>
+                    <td class="col-auto">{{user.email}}</td>
+                </tr>
+                <tr class="row" >
+                    <td class="col-4" scope="row">Téléphone</td>
+                    <td class="col-auto">{{user.phone}}</td>
+                </tr>
+                <tr>
+                    {{dump(address)}}
+                </tr>
+                {# <tr>
+                    <td scope="row">Rue</td>
+                    <td>{{user.address.street}}</td>
+                </tr>
+                <tr>
+                    <td scope="row">Code postal</td>
+                    <td>{{user.address.postalCode}}</td>
+                </tr>
+                <tr>
+                    <td scope="row">Ville</td>
+                    <td>{{user.address.city}}</td>
+                </tr> #}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

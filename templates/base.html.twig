@@ -12,8 +12,62 @@
         {% block javascripts %}
             {#{{ encore_entry_script_tags('app') }}#}
         {% endblock %}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     </head>
     <body>
-        {% block body %}{% endblock %}
+        {% block body %}
+            <div id="navigation">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">Navbar</a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                            <a class="nav-link" aria-current="page" href="/">Accueil</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle {% if active_menu is defined and active_menu == 'article' %}active{% endif %}" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Article
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="{{path('article.list')}}">Liste</a></li>
+                                <li><a class="dropdown-item" href="{{path('article.create')}}">Création</a></li>
+                            </ul>
+                            </li>
+                        </ul>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            {% for label, messages in app.flashes(['success', 'warning']) %}
+                {% for message in messages %}
+                    <div class="container mt-3">
+                        <div class="alert bg-{{label}} flash-{{ label }}">
+                            {{ message }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            <div id="sidebar">
+                {% block sidebar %}
+                    <ul>
+                        {# <li><a href="{{ path('homepage') }}">Home</a></li>
+                        <li><a href="{{ path('blog_index') }}">Blog</a></li> #}
+                    </ul>
+                {% endblock %}
+            </div>
+            <div class="container">
+                <div id="content">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        {% endblock %}
+        {% block js %}{% endblock %}
     </body>
 </html>

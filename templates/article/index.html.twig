@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des enchères{% endblock %}
+
+{% block content %}
+    <h1>Liste des enchères</h1>
+    <div class="row">
+        
+        <form class="my-2" action="">
+            <div class="row">
+                    <legend>Filtres : </legend>
+                <div class="col-7">
+                    <div class="row gx-0">
+                        <input type="text" class="form-control" name="article_filter" id="article_filter" placeholder="Le nom contient...">
+                    </div>
+                    <div class="row my-2 gx-0 align-items-center">
+                        <label class="col-auto me-3" for="category">Catégorie : </label>
+                        <select class="form-control col" name="article_category_filter" id="article_category_filter">
+                        {% for category in categories %}
+                            <option>{{category.name}}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row gx-0">
+
+                        <div class="col-6">
+                            <div class="form-check">
+                                <input onChange="radioChanged()" class="form-check-input" type="radio" name="flexRadioFilter" id="flexRadioAchats">
+                                <label class="form-check-label" for="flexRadioAchats">
+                                    Achats
+                                </label>
+                            </div>
+                            <div class="ps-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        enchères ouvertes
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+                                    <label class="form-check-label" for="flexCheckChecked">
+                                        mes enchères en cours
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+                                    <label class="form-check-label" for="flexCheckChecked">
+                                        mes enchères remportées
+                                    </label>
+                                </div>
+                            </div>
+                        </div>  
+                        <div class="col-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="flexRadioFilter" id="flexRadioMesVentes" checked>
+                                <label class="form-check-label" for="flexRadioMesVentes">
+                                    Mes ventes
+                                </label>
+                            </div>
+                            <div class="ps-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        mes enchères en cours
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+                                    <label class="form-check-label" for="flexCheckChecked">
+                                        ventes non débutées
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+                                    <label class="form-check-label" for="flexCheckChecked">
+                                        ventes terminées
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-5 text-center d-flex flex-column">
+                    <div class="my-auto">
+                        <button class="btn btn-success p-4">Rechercher</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="row mt-3">
+        {% for article in articles %}
+            <div class="col-lg-6 mb-3">
+                <div class="card mx-auto p-2" style="max-width: 100%;">
+                    <div class="row g-0">
+                        <div class="col-4">
+                            <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" class="img-thumbnail img-fluid rounded-start " alt={{article.name}}>
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body">
+                                <h5 class="card-title"><a href="{{ path('article.details', {id: article.id})}}">{{article.name}}</a></h5>
+                                <p class="card-text">{{article.description}}</p>
+                                <p class="card-text">Prix : {{article.miseAPrix}}</p>
+                                <p class="card-text">Fin de l'enchère : {{article.dateFinEnchere | date('d-m-Y H:i')}}</p>
+                                <p class="card-text">Vendeur : {% if app.user %}<a href="{{ path('user.details', {id: app.user.id}) }}">{{article.user.pseudo | capitalize}}</a>{% else %}{{article.user.pseudo | capitalize}}{% endif %}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+        {# function radioChanged(){
+
+            const achats_filter = document.querySelector('#flexRadioAchats');
+
+            console.log(achats_filter.value);
+            console.log(achats_filter);
+        } #}
+    </script>
+{% endblock %}
