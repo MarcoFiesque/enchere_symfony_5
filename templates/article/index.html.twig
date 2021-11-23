@@ -93,10 +93,14 @@
     <div class="row mt-3">
         {% for article in articles %}
             <div class="col-lg-6 mb-3">
-                <div class="card mx-auto p-2" style="max-width: 100%;">
+                <div class="card mx-auto p-2" style="max-width: 100%;max-height:100%;">
                     <div class="row g-0">
-                        <div class="col-4">
+                        <div class="col-4 article_image_container d-flex align-items-center">
+                            {% if article.image %}
+                            <img src="/images/articles/{{ article.image }}" class="img-thumbnail img-fluid rounded-start " alt={{article.name}}>
+                            {% else %}
                             <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" class="img-thumbnail img-fluid rounded-start " alt={{article.name}}>
+                            {% endif %}
                         </div>
                         <div class="col-8">
                             <div class="card-body">

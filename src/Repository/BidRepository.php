@@ -19,6 +19,18 @@ class BidRepository extends ServiceEntityRepository
         parent::__construct($registry, Bid::class);
     }
 
+    /**
+    * @return Bid[] Returns an array of Bid objects
+    */
+    public function findAllByMaxBidAmmount()
+    {
+        return $this->createQueryBuilder('b')
+            ->orderBy('b.bid_ammount', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // /**
     //  * @return Bid[] Returns an array of Bid objects
     //  */
@@ -35,6 +47,17 @@ class BidRepository extends ServiceEntityRepository
         ;
     }
     */
+
+
+    // public function findMaxBidAmmount(): ?Bid
+    // {
+    //     return $this->createQueryBuilder('a')
+    //         // ->andWhere('a.exampleField = :val')
+    //         ->setParameter('val', $value)
+    //         ->getQuery()
+    //         ->getOneOrNullResult()
+    //     ;
+    // }
 
     /*
     public function findOneBySomeField($value): ?Bid

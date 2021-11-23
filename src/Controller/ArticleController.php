@@ -4,15 +4,18 @@ namespace App\Controller;
 
 use DateTime;
 use DateInterval;
+use App\Entity\Bid;
 use App\Entity\Article;
 use App\Entity\Category;
 use App\Form\ArticleType;
+use App\Repository\BidRepository;
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
@@ -20,19 +23,35 @@ class ArticleController extends AbstractController
 {
     private $em;
     private $repository;
-    public function __construct(ArticleRepository $repository,  EntityManagerInterface $em)
+    private $bidRepository;
+    public function __construct(ArticleRepository $repository, BidRepository $bidRepository, EntityManagerInterface $em)
     {
         $this->em = $em;
         $this->repository = $repository;
+        $this->bidRepository = $bidRepository;
     }
 
+    // #[Route('/article/list', name: 'article.list')]
+    // public function index(): Response
+    // {
+    //     // $articles = $this->em->getRepository(Article::class)->findAl;
+    //     // $categories = $this->em->getRepository(Category::class)->findAll();
+    //     $articles = $this->repository->findAll();
+    //     $categories = $this->em->getRepository(Article::class)->findAll();
+    //     return $this->render('article/index.html.twig', [
+    //         'articles'=>$articles,
+    //         'categories'=>$categories,
+    //         'active_menu'=>'article'
+    //     ]);
+    // }
     #[Route('/article/list', name: 'article.list')]
-    public function index(): Response
+    public function list(): Response
     {
-        // $articles = $this->em->getRepository(Article::class)->findAl;
+        $articles = $this->repository->findAllVisible();
         // $categories = $this->em->getRepository(Category::class)->findAll();
-        $articles = $this->repository->findAll();
-        $categories = $this->em->getRepository(Article::class)->findAll();
+
+        $categories = $this->em->getRepository(Category::class)->findAll();
+
         return $this->render('article/index.html.twig', [
             'articles'=>$articles,
             'categories'=>$categories,
@@ -44,11 +63,19 @@ class ArticleController extends AbstractController
     public function edit(int $id, Request $request): Response
     {
         $article = $this->repository->find($id);
+        
+        $this->denyAccessUnlessGranted('edit', $article);
+
+        if (!$article) {
+            throw $this->createNotFoundException(
+                'Aucun article pour l\'id: ' . $id
+            );
+        }
 
         if ($article->getUser() !== $this->getUser()) {
             throw $this->createAccessDeniedException();
         }
-        // dd($article);
+
         $user = $this->getUser();
         $form = $this->createForm(ArticleType::class, $article);
         $form->handleRequest($request);
@@ -66,6 +93,7 @@ class ArticleController extends AbstractController
         return $this->render('article/articleForm.html.twig', [
             'articleForm'=>$form->createView(),
             'article'=>$article,
+            'mode'=>'edit'
         ]);
     }
 
@@ -73,13 +101,16 @@ class ArticleController extends AbstractController
     public function details(int $id): Response
     {
         $article = $this->repository->find($id);
-        $leading = null;
-        $bids = $article->getBids();
-        $bidsArray = $bids->toArray();
-        if(count($bidsArray)>0){
-            $leading = max($bidsArray);
+        $now = new \DateTime();
+        $timeRemaining = date_diff($now, $article->getDateFinEnchere());
+        if($timeRemaining > 0){
+            $article->setEtatVente(Article::TERMINEE);
         }
-        return $this->render('article/details.html.twig', ["article"=>$article, "leading"=>$leading]);
+        $bids = $this->bidRepository->findAllByMaxBidAmmount();
+        $maxBid = $bids[0];
+        $this->denyAccessUnlessGranted('view', $article);
+        
+        return $this->render('article/details.html.twig', ["article"=>$article, "maxBid"=>$maxBid, "timeRemaining"=>$timeRemaining]);
     }
 
     #[Route('/article/create', name:"article.create")]
@@ -108,6 +139,7 @@ class ArticleController extends AbstractController
         return $this->renderForm('article/articleForm.html.twig', [
             'articleForm'=>$form,
             'article'=>$article,
+            'mode'=>'create'
         ]);
     }
 

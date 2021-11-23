@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class ArticleType extends AbstractType
@@ -39,7 +40,10 @@ class ArticleType extends AbstractType
             ->add('prixVente')
             ->add('category', EntityType::class,[
                 'class'=>Category::class,
-                'choice_label'=>'name'
+                'choice_label'=>'name',
+            ])
+            ->add('imageFile', FileType::class,[
+                'required' => false,
             ])
             // ->add('pickup', EntityType::class,[
             //     'class'=>Pickup::class,

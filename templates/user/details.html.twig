@@ -27,23 +27,12 @@
                     <td class="col-4" scope="row">Téléphone</td>
                     <td class="col-auto">{{user.phone}}</td>
                 </tr>
-                <tr>
-                    {{dump(address)}}
-                </tr>
-                {# <tr>
-                    <td scope="row">Rue</td>
-                    <td>{{user.address.street}}</td>
-                </tr>
-                <tr>
-                    <td scope="row">Code postal</td>
-                    <td>{{user.address.postalCode}}</td>
-                </tr>
-                <tr>
-                    <td scope="row">Ville</td>
-                    <td>{{user.address.city}}</td>
-                </tr> #}
             </tbody>
         </table>
+        <div class="row border user_address_block" >
+            <td class="col-4" scope="row">Addresse</td>
+            <td class="col-auto">{{address.street ?? ''}}, {{address.city ?? ''}} {{address.postalCode ?? ''}}</td>
+        </div>
     </div>
 
 {% endblock %}

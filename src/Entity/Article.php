@@ -2,13 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\ArticleRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ArticleRepository;
+use Doctrine\Common\Collections\Collection;
+use Symfony\Component\HttpFoundation\File\File;
+use Doctrine\Common\Collections\ArrayCollection;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
+ * @Vich\Uploadable
  */
 class Article
 {
@@ -87,8 +90,25 @@ class Article
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="string", length=200, nullable=true)
+     */
+    private $image;
+
+    /**
+     * @var File
+     * @Vich\UploadableField(mapping="article_image", fileNameProperty="image")
+     */
+    private $imageFile;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $max_bid_value;
+
     public function __construct()
     {
+        $this->max_bid_value = 0;
         $this->bids = new ArrayCollection();
     }
 
@@ -245,19 +265,55 @@ class Article
         return $this;
     }
 
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+    
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+        
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile(?File $imageFile): self
+    {
+        $this->imageFile = $imageFile;
+
+        return $this;
+    }
+    
     public function __toString()
     {
         return $this->getName();
     }
 
-    public function getUser(): ?User
+    public function getMaxBidValue(): ?int
     {
-        return $this->user;
+        return $this->max_bid_value;
     }
 
-    public function setUser(?User $user): self
+    public function setMaxBidValue(?int $max_bid_value): self
     {
-        $this->user = $user;
+        $this->max_bid_value = $max_bid_value;
 
         return $this;
     }

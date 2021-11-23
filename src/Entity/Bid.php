@@ -38,10 +38,11 @@ class Bid
      * @ORM\JoinColumn(nullable=false)
      */
     private $article;
-
     
-
-    
+    public function __construct()
+    {
+        $this->setBidDate(new \DateTime());
+    }
 
     public function getId(): ?int
     {

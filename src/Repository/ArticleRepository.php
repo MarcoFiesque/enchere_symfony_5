@@ -3,9 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Article;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\Security;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method Article|null find($id, $lockMode = null, $lockVersion = null)
@@ -15,8 +16,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ArticleRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $security;
+    public function __construct(ManagerRegistry $registry, Security $security)
     {
+        $this->security = $security;
         parent::__construct($registry, Article::class);
     }
 
@@ -27,17 +30,29 @@ class ArticleRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findLatest():array
-    {
-        return $this->findVisibleQuery()
-            ->setMaxResults(4)
-            ->getQuery()
-            ->getResult();
-    }
+    // public function findLatest():array
+    // {
+    //     return $this->findVisibleQuery()
+    //         ->setMaxResults(4)
+    //         ->getQuery()
+    //         ->getResult();
+    // }
 
     public function findVisibleQuery():QueryBuilder
     {
-        return $this->createQueryBuilder('a')->where(`a.etatVente = En cours`);
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.etatVente = :val')
+            ->setParameter('val', Article::DEMARREE);
+    }
+
+    public function findOwnArticles():array
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.user = :user')
+            ->setParameter('user', $this->security->getUser())
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
     }
 
     // /**

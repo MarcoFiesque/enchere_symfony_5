@@ -1,18 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Création article{% endblock %}
+{% block title %}Formulaire article{% endblock %}
 
 {% block content %}
-    <h1 class="text-center mb-4">Nouvel vente</h1>
+    <h1 class="text-center my-4">{{ mode == 'create' ? 'Création d\'article' : 'Édition d\'article' }}</h1>
     <div class="form_wrapper">
             {{ form_start(articleForm) }}
         <div class="row">
+            {% if article is defined and article.id != null %}
             <div class="col-md-4">
-                {# {% if article is defined and article != null %} #}
                     <img src="http://via.placeholder.com/200x150" alt="{{article.name ?? 'placeholder'}}">
-                {# {% endif %} #}
             </div>
-            <div class="col-md-8">
+            {% endif %}
+            <div class="col">
                 {{ form_row(articleForm.name) }}
                 {{ form_row(articleForm.description) }}
                 <div class="row">
@@ -21,6 +21,17 @@
                     </div>
                     <div class="col-6">
                         {{ form_row(articleForm.dateFinEnchere) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        {{form_row(articleForm.imageFile)}}
+                    </div>
+                    <div class="col-md-6">
+                        <div class=" mb-3">
+                            Image
+                        </div>
+                        {{article.image ?? ''}}
                     </div>
                 </div>
                 <div class="row">
@@ -51,16 +62,20 @@
         </div>
         <div class="mt-3 buttons_field">
             <div class="offset-md-4 mb-2 col-md-4 justify-content-between d-flex px-0">
-                <button class="btn btn-primary w-auto p-4 m-0">Valider</button>
-                {# <a href="{{path( app.request.headers.get('referer') )}}" class="btn btn-primary w-auto p-4 m-0">Annuler</a> #}
-                <a href="{{path('article.details', {'id': article.id})}}" class="btn btn-warning w-auto p-4 m-0">Annuler</a>
+                <button class="btn btn-success w-auto p-3 m-0 me-2">Valider</button>
+
+                {% if article.id %}
+                    <a href="{{path('article.details', {'id': article.id})}}" class="btn btn-warning w-auto p-3 m-0 me-2">Retour</a>
+                {% endif %}
             </div>
         </div>
         {{form_end(articleForm)}}
+            {% if article is defined and article.id != null %}
                 <form id="formDelete" method="post" action="{{ path("article.delete", {"id":article.id} ) }}" style="display:inline" onsubmit="return confirm('Vous êtes sur le point de supprimer cet article')">
                     <input type="hidden" name="_method" value="DELETE">
                     <input type="hidden" name="_token" value="{{ csrf_token('DELETE' ~ article.id)}}">
-                    <button type="submit" class="btn btn-danger w-auto p-4 m-0">Annuler la vente</button>
+                    <button type="submit" class="btn btn-danger w-auto p-3 m-0">Annuler la vente</button>
                 </form>
+            {% endif %}
     </div>
 {% endblock %}

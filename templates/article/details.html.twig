@@ -3,67 +3,98 @@
 {% block title %}Article{% endblock %}
 
 {% block content %}
-<p>Username: {{ app.user.pseudo ?? 'Anonymous user' }}</p>
-<p>User roles: 
-    {% for role in app.user.roles %}
-        {{role}}
-    {% endfor %}</p>
+    <div class="wrapper h-100 d-flex flex-column rounded">
+        
+        {% if user is defined %}
+        <p>Username: {{ app.user.pseudo ?? 'Anonymous user' }}</p>
+        <p>User roles: 
+            {% for role in app.user.roles %}
+                {{role}}
+            {% endfor %}</p>
+        {% endif %}
 
-    <h1 class="text-center">Détail vente</h1>
-    <div class="row justify-content-center my-4">
-        <div class="col-12 col-lg-3">
-            <img src="http://via.placeholder.com/200x150" alt="{{article.name}}">
-        </div>
-        <div class="col-12 col-lg-6">
+        <h1 class="text-center">Détail vente</h1>
+
+        <div class="row shadow justify-content-center my-auto gx-0 ">
             <div class="row">
-                <h4>{{article.name}}</h4>
+
+                {# <div class="col offset-8">
+                    <div class="ms-auto d-flex flex-column text-center mt-1 me-4">
+                        <div>Temps restant : {{ timeRemaining.h }} h {{ timeRemaining.i }} m {{ timeRemaining.s }} s</div>
+                    </div>
+                </div> #}
+
             </div>
-            <div class="row">
-                <div class="col-4">Description : </div>
-                <div class="col-8">{{article.description}}</div>
+            <div class="col-12 col-lg-3 mb-2 align-items-center rounded row">
+                {% if article.image %}
+                    <img class="img-fluid img_article img-thumbnail rounded" src="/images/articles/{{ article.image }}" alt="{{article.name}}">
+                {% else %}
+                    <img class="img-fluid img_article" src="{{ 'http://via.placeholder.com/200x150' }}" alt="{{article.name}}">
+                {% endif %}
             </div>
-            <div class="row">
-                <div class="col-4">Catégorie : </div>
-                <div class="col-8">{{article.category}}</div>
-            </div>
-            <div class="row">
-                <div class="col-4">Meilleure Offre : </div>
-                <div class="col-8">{{leading ? leading : "Aucune enchère"}}</div>
-            </div>
-            <div class="row">
-                <div class="col-4">Mise à prix : </div>
-                <div class="col-8">{{article.miseAPrix ?? 0}} points</div>
-            </div>
-            <div class="row">
-                <div class="col-4">Fin de l'enchère : </div>
-                <div class="col-8">{{article.dateFinEnchere | date('d-M-Y H:i')}}</div>
-            </div>
-            <div class="row">
-                <div class="col-4">Retrait : </div>
-                <div class="col-8">{{article.pickup ?? '...'}}</div>
-            </div>
-            <div class="row">
-                <div class="col-4">Vendeur : </div>
-                <div class="col-8">{{ article.user }} </div>
-            </div>
-            {% if app.user != article.user %}
-            <div class="row">
-                <div class="col-4">Ma proposition : </div>
-                <div class="col-8">
-                    <form action="">
-                        <div class="row d-flex align-items-center">
-                            <div class="form-group col">
-                                <input class="form-control" type="number">
-                            </div>
-                            <div class="col">
-                                <button class="btn btn-primary p-3">Enchérir</button>
-                            </div>
-                        </div>
-                    </form>
+            <div class="col-10 col-lg-6 offset-lg-1">
+                <div class="row">
+                    <h4>{{article.name}}</h4>
+                </div>
+                <div class="row">
+                    <div class="col-5">Description : </div>
+                    <div class="col-7">{{article.description}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-5">Catégorie : </div>
+                    <div class="col-7">{{article.category}}</div>
+                </div>
+                <div class="row rounded">
+                    <div class="col-5">Meilleure mise : </div>
+                    <div class="col-7 bg-info rounded">{{ maxBid.bidAmmount ?? 0 }} point(s) ({{ maxBid.user.pseudo }})</div>
+                </div>
+                <div class="row">
+                    <div class="col-5">Mise à prix : </div>
+                    <div class="col-7">{{article.miseAPrix ?? 0}} point(s)</div>
+                </div>
+                <div class="row">
+                    <div class="col-5">Fin de l'enchère :</div>
+                    <div class="col-7">{{article.dateFinEnchere | date('d-M-Y H:i')}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-5">Retrait : </div>
+                    <div class="col-7">{{article.pickup ?? '...'}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-5">Vendeur : </div>
+                    <div class="col-7">{{ article.user }} </div>
+                </div>
+                {% if app.user != article.user %}
+                <div class="row">
+                    <div class="col-5">Ma proposition : </div>
+                    <div class="col-7">
+                        <form action="{{url('bid_registration', {articleId: article.id})}}" method="post">
+
+                                <input type="hidden" name="token" value="{{ csrf_token('register-bid') }}"/>
+                                <div class="row d-flex align-items-center">
+                                    <div class="col">
+                                        <input class="form-control" name="bid_value" type="number">
+                                    </div>
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-primary p-3 my-1">Enchérir</button>
+                                    </div>
+                                </div>
+
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div>
+                    {% if is_granted('edit', article) %}
+
+                        <a href="{{path('article.edit', {id: article.id})}}" class="btn btn-outline-primary my-1">
+                            Editer
+                        </a>
+                    {% endif %}
                 </div>
             </div>
-            {% endif %}
         </div>
-    </div>
 
+    </div>
 {% endblock %}
